@@ -1,0 +1,690 @@
+// Stationary items with prices
+const stationaryItems = [
+    { name: "Upper Blade", price: 12 },
+    { name: "Pencils", price: 5 },
+    { name: "Blue Pen", price: 10 },
+    { name: "Black Pen", price: 10 },
+    { name: "Gillate Guard", price: 25 },
+    { name: "Closeup", price: 20 },
+    { name: "Tooth Brush", price: 20 },
+    { name: "Cloth Brush", price: 35 },
+    { name: "Active", price: 5 },
+    { name: "katah", price: 10 },
+    { name: "Coloueful Lungi", price: 120 },
+    { name: "White Lungi", price: 150 },
+    { name: "Topi", price: 100 },
+    { name: "Neel", price: 10 },
+    { name: "Comfort", price: 60 },
+    { name: "Doctor Wash", price: 35 },
+    { name: "Ujala", price: 10 },
+    { name: "Harbal", price: 20 },
+    { name: "Pen Pencil", price: 20 },
+    { name: "Detol", price: 10 },
+    { name: "Lux", price: 10 },
+    { name: "Centhol", price: 10 },
+    { name: "Pears", price: 40 },
+    { name: "Sony Bar", price: 50 },
+    { name: "Mirror", price: 10 },
+    { name: "Comb", price: 5 },
+    { name: "Surf", price: 10 },
+    { name: "Hanger", price: 70 },
+    { name: "Cliniv Plus", price: 20 },
+    { name: "Dove", price: 35 },
+    { name: "Handkerchief", price: 25 },
+    { name: "Bandi", price: 55 },
+    { name: "Underwear", price: 80 }
+];
+
+// Student data
+const students = [
+    { name: "Ansari Ahmed", age: 12 },
+    { name: "Kaish Ansari", age: 11 },
+    { name: "Shahil Ali", age: 12 },
+    { name: "Mustafa NPL", age: 11 },
+    { name: "Huzaifa Ansari", age: 12 },
+    { name: "Shahbaz Ansari", age: 11 },
+    { name: "Anas Ansari", age: 12 },
+    { name: "Abdul Alam", age: 11 },
+    { name: "Hashmat Raza", age: 12 },
+    { name: "Yusuf Ali", age: 11 },
+    { name: "Atif Neyaz", age: 12 },
+    { name: "Tausif Raza", age: 11 },
+    { name: "Shamsuddin Hashmi", age: 12 },
+    { name: "Mokarram Faiz", age: 11 },
+    { name: "Faizan Raza", age: 12 },
+    { name: "Hamza Ali", age: 11 },
+    { name: "Arif Khan", age: 12 },
+    { name: "Ahad Abbasi", age: 11 },
+    { name: "Mudassir", age: 12 },
+    { name: "Nematullah", age: 11 },
+    { name: "Zulqarnain", age: 12 },
+    { name: "Zeeshan", age: 11 },
+    { name: "Esmatullah", age: 12 },
+    { name: "Mubashir raza", age: 11 },
+    { name: "Aman Rshad", age: 12 },
+    { name: "Syed Abdul Ahad", age: 11 },
+    { name: "Farhan Raza", age: 12 },
+    { name: "Ahmed Raza", age: 11 },
+    { name: "Meraj Khan", age: 12 },
+    { name: "Junaid Ansari", age: 11 },
+    { name: "Md Hasan", age: 12 },
+    { name: "Ghulam Yazdani", age: 11 },
+    { name: "Ahsan Ansari", age: 12 }
+];
+
+// Enhanced Login functionality
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value.trim().toUpperCase();
+    const password = document.getElementById('password').value.trim();
+    
+    // Clear previous error states
+    document.querySelectorAll('.form-group').forEach(group => {
+        group.classList.remove('error');
+    });
+    
+    // Validate inputs
+    let hasError = false;
+    
+    if (username.length < 3) {
+        document.getElementById('username').closest('.form-group').classList.add('error');
+        hasError = true;
+    }
+    
+    if (password.length < 6) {
+        document.getElementById('password').closest('.form-group').classList.add('error');
+        hasError = true;
+    }
+    
+    if (hasError) {
+        showNotification('Please fill in all fields correctly', 'warning');
+        return;
+    }
+    
+    // Enhanced login validation
+    const validUsers = {
+        "KAISH": { password: "ALMISBAH25BATCH", name: "Kaish Ansari" },
+        "MERAJ": { password: "ALMISBAH25BATCH", name: "Meraj Khan" },
+        "HASAN": { password: "ALMISBAH25BATCH", name: "Md Hasan" }
+    };
+    
+    if (validUsers[username] && validUsers[username].password === password) {
+        // Store login information
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('currentUser', JSON.stringify({
+            username: username,
+            name: validUsers[username].name,
+            loginTime: new Date().toISOString()
+        }));
+        
+        // Hide login form
+        document.getElementById('loginContainer').classList.add('hidden');
+        
+        // Show user info
+        showUserInfo(username, validUsers[username].name);
+        
+        // Show welcome notification
+        showNotification(`Welcome, ${validUsers[username].name}!`, 'success');
+        
+        // Initialize the system
+        setTimeout(() => {
+            generateTableRows();
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('totalStationaryItems').textContent = stationaryItems.length;
+        }, 500);
+    } else {
+        // Show error message
+        document.getElementById('errorMessage').style.display = 'block';
+        
+        // Shake the form
+        const loginForm = document.querySelector('.login-form');
+        loginForm.style.animation = 'shake 0.5s';
+        setTimeout(() => {
+            loginForm.style.animation = '';
+        }, 500);
+        
+        showNotification('Invalid username or password', 'error');
+    }
+});
+
+// Show user info
+function showUserInfo(username, displayName) {
+    const userInfo = document.getElementById('userInfo');
+    const userAvatar = document.getElementById('userAvatar');
+    const usernameDisplay = document.getElementById('usernameDisplay');
+    
+    userInfo.style.display = 'flex';
+    userAvatar.textContent = displayName.charAt(0);
+    usernameDisplay.textContent = displayName;
+}
+
+// Logout functionality
+function logout() {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser');
+    
+    // Clear form data
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    
+    // Show login form
+    document.getElementById('loginContainer').classList.remove('hidden');
+    
+    // Hide user info
+    document.getElementById('userInfo').style.display = 'none';
+    
+    showNotification('You have been logged out successfully', 'success');
+}
+
+// Add shake animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+`;
+document.head.appendChild(style);
+
+// Generate table rows
+function generateTableRows() {
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = '';
+    
+    students.forEach((student, studentIndex) => {
+        const row = document.createElement('tr');
+        row.setAttribute('data-name', student.name.toLowerCase());
+        
+        // Student details cell
+        const studentCell = document.createElement('td');
+        const studentInfo = document.createElement('div');
+        studentInfo.className = 'student-info';
+        
+        const studentAvatar = document.createElement('div');
+        studentAvatar.className = 'student-avatar';
+        studentAvatar.textContent = student.name.charAt(0);
+        
+        const studentDetails = document.createElement('div');
+        studentDetails.className = 'student-details';
+        
+        const studentName = document.createElement('h4');
+        studentName.textContent = student.name;
+        
+        const studentId = document.createElement('p');
+        studentId.textContent = `Student ID: STU${1000 + studentIndex}`;
+        
+        studentDetails.appendChild(studentName);
+        studentDetails.appendChild(studentId);
+        
+        studentInfo.appendChild(studentAvatar);
+        studentInfo.appendChild(studentDetails);
+        studentCell.appendChild(studentInfo);
+        
+        // Stationary items cell
+        const stationaryCell = document.createElement('td');
+        const stationaryList = document.createElement('div');
+        stationaryList.className = 'stationary-list';
+        
+        stationaryItems.forEach((item, itemIndex) => {
+            const stationaryItem = document.createElement('div');
+            stationaryItem.className = 'stationary-item';
+            stationaryItem.setAttribute('data-student-index', studentIndex);
+            stationaryItem.setAttribute('data-item-index', itemIndex);
+            
+            const itemLabel = document.createElement('span');
+            itemLabel.textContent = item.name;
+            
+            const itemPrice = document.createElement('span');
+            itemPrice.className = 'item-price';
+            itemPrice.textContent = `₹${item.price}`;
+            
+            // Quantity selector
+            const quantitySelector = document.createElement('div');
+            quantitySelector.className = 'quantity-selector';
+            
+            const decreaseBtn = document.createElement('button');
+            decreaseBtn.className = 'quantity-btn';
+            decreaseBtn.innerHTML = '<i class="fas fa-minus"></i>';
+            decreaseBtn.onclick = function() {
+                const input = quantityInput;
+                const currentValue = parseInt(input.value);
+                if (currentValue > 0) {
+                    input.value = currentValue - 1;
+                    saveQuantity(studentIndex, itemIndex, currentValue - 1);
+                    calculateStudentTotal(studentIndex);
+                }
+            };
+            
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.className = 'quantity-input';
+            quantityInput.min = '0';
+            quantityInput.value = '0';
+            
+            // Load saved quantity from localStorage
+            const savedQuantity = localStorage.getItem(`student-${studentIndex}-item-${itemIndex}-quantity`);
+            if (savedQuantity !== null) {
+                quantityInput.value = savedQuantity;
+            }
+            
+            // Add event listener to save quantity
+            quantityInput.addEventListener('change', function() {
+                const value = parseInt(this.value) || 0;
+                this.value = value;
+                saveQuantity(studentIndex, itemIndex, value);
+                calculateStudentTotal(studentIndex);
+            });
+            
+            const increaseBtn = document.createElement('button');
+            increaseBtn.className = 'quantity-btn';
+            increaseBtn.innerHTML = '<i class="fas fa-plus"></i>';
+            increaseBtn.onclick = function() {
+                const input = quantityInput;
+                const currentValue = parseInt(input.value);
+                input.value = currentValue + 1;
+                saveQuantity(studentIndex, itemIndex, currentValue + 1);
+                calculateStudentTotal(studentIndex);
+            };
+            
+            quantitySelector.appendChild(decreaseBtn);
+            quantitySelector.appendChild(quantityInput);
+            quantitySelector.appendChild(increaseBtn);
+            
+            stationaryItem.appendChild(itemLabel);
+            stationaryItem.appendChild(itemPrice);
+            stationaryItem.appendChild(quantitySelector);
+            
+            // Add click event for selection
+            stationaryItem.addEventListener('click', function(e) {
+                // Don't trigger if clicking on quantity controls
+                if (e.target.closest('.quantity-selector')) {
+                    return;
+                }
+                
+                toggleStationarySelection(studentIndex, itemIndex);
+            });
+            
+            // Add remove selection button
+            const removeSelection = document.createElement('div');
+            removeSelection.className = 'remove-selection';
+            removeSelection.innerHTML = '<i class="fas fa-times"></i>';
+            removeSelection.onclick = function(e) {
+                e.stopPropagation();
+                deselectStationaryItem(studentIndex, itemIndex);
+            };
+            
+            stationaryItem.appendChild(removeSelection);
+            
+            stationaryList.appendChild(stationaryItem);
+        });
+        
+        stationaryCell.appendChild(stationaryList);
+        
+        // Total cell
+        const totalCell = document.createElement('td');
+        totalCell.className = 'student-total';
+        totalCell.id = `student-total-${studentIndex}`;
+        totalCell.textContent = '₹0';
+        
+        row.appendChild(studentCell);
+        row.appendChild(stationaryCell);
+        row.appendChild(totalCell);
+        
+        tableBody.appendChild(row);
+    });
+    
+    // Calculate initial totals for all students
+    students.forEach((student, index) => {
+        calculateStudentTotal(index);
+    });
+    
+    // Initialize summaries
+    initializeSummaries();
+    
+    // Update selected items count
+    updateSelectedItemsCount();
+}
+
+// Toggle stationary item selection
+function toggleStationarySelection(studentIndex, itemIndex) {
+    const stationaryItem = document.querySelector(`[data-student-index="${studentIndex}"][data-item-index="${itemIndex}"]`);
+    const quantityInput = stationaryItem.querySelector('.quantity-input');
+    
+    if (stationaryItem.classList.contains('selected')) {
+        // Deselect
+        stationaryItem.classList.remove('selected');
+        quantityInput.value = 0;
+        saveQuantity(studentIndex, itemIndex, 0);
+    } else {
+        // Select
+        stationaryItem.classList.add('selected');
+        quantityInput.value = 1;
+        saveQuantity(studentIndex, itemIndex, 1);
+    }
+    
+    calculateStudentTotal(studentIndex);
+    updateSelectedItemsCount();
+    showNotification(`Item ${stationaryItem.querySelector('span').textContent} ${stationaryItem.classList.contains('selected') ? 'selected' : 'deselected'}`);
+}
+
+// Deselect specific stationary item
+function deselectStationaryItem(studentIndex, itemIndex) {
+    const stationaryItem = document.querySelector(`[data-student-index="${studentIndex}"][data-item-index="${itemIndex}"]`);
+    const quantityInput = stationaryItem.querySelector('.quantity-input');
+    
+    stationaryItem.classList.remove('selected');
+    quantityInput.value = 0;
+    saveQuantity(studentIndex, itemIndex, 0);
+    
+    calculateStudentTotal(studentIndex);
+    updateSelectedItemsCount();
+}
+
+// Update selected items count
+function updateSelectedItemsCount() {
+    const selectedItems = document.querySelectorAll('.stationary-item.selected').length;
+    const selectedCount = document.getElementById('selectedCount');
+    const selectionIndicator = document.getElementById('selectionIndicator');
+    
+    selectedCount.textContent = selectedItems;
+    
+    if (selectedItems > 0) {
+        selectionIndicator.classList.add('show');
+    } else {
+        selectionIndicator.classList.remove('show');
+    }
+}
+
+// Save quantity to localStorage
+function saveQuantity(studentIndex, itemIndex, quantity) {
+    localStorage.setItem(`student-${studentIndex}-item-${itemIndex}-quantity`, quantity);
+}
+
+// Calculate total for a specific student
+function calculateStudentTotal(studentIndex) {
+    let studentTotal = 0;
+    const row = document.querySelector(`#tableBody tr:nth-child(${studentIndex + 1})`);
+    const quantityInputs = row.querySelectorAll('.quantity-selector input');
+    
+    stationaryItems.forEach((item, itemIndex) => {
+        const quantity = parseInt(quantityInputs[itemIndex].value) || 0;
+        studentTotal += item.price * quantity;
+    });
+    
+    document.getElementById(`student-total-${studentIndex}`).textContent = `₹${studentTotal}`;
+}
+
+// Initialize summaries
+function initializeSummaries() {
+    // Initialize with empty data
+    const stationarySummary = document.getElementById('stationarySummary');
+    stationarySummary.innerHTML = '<li class="summary-item">No data available</li>';
+    
+    const topStudents = document.getElementById('topStudents');
+    topStudents.innerHTML = '<li class="summary-item">No data available</li>';
+}
+
+// Calculate all totals
+function calculateAllTotals() {
+    showLoadingSpinner();
+    
+    setTimeout(() => {
+        let grandTotal = 0;
+        const itemCounts = {};
+        
+        // Initialize item counts
+        stationaryItems.forEach(item => {
+            itemCounts[item.name] = 0;
+        });
+        
+        students.forEach((student, studentIndex) => {
+            let studentTotal = 0;
+            const row = document.querySelector(`#tableBody tr:nth-child(${studentIndex + 1})`);
+            const quantityInputs = row.querySelectorAll('.quantity-selector input');
+            
+            stationaryItems.forEach((item, itemIndex) => {
+                const quantity = parseInt(quantityInputs[itemIndex].value) || 0;
+                if (quantity > 0) {
+                    studentTotal += item.price * quantity;
+                    itemCounts[item.name] += quantity;
+                }
+            });
+            
+            document.getElementById(`student-total-${studentIndex}`).textContent = `₹${studentTotal}`;
+            grandTotal += studentTotal;
+        });
+        
+        document.getElementById('grandTotal').textContent = `₹${grandTotal}`;
+        
+        // Update stationary summary
+        updateStationarySummary(itemCounts);
+        
+        // Update top students
+        updateTopStudents();
+        
+        hideLoadingSpinner();
+        showNotification('Total calculated successfully!');
+    }, 500);
+}
+
+// Update stationary summary
+function updateStationarySummary(itemCounts) {
+    const summaryList = document.getElementById('stationarySummary');
+    summaryList.innerHTML = '';
+    
+    // Sort items by total quantity
+    const sortedItems = Object.entries(itemCounts)
+        .filter(([name, count]) => count > 0)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    
+    if (sortedItems.length === 0) {
+        summaryList.innerHTML = '<li class="summary-item">No data available</li>';
+        return;
+    }
+    
+    sortedItems.forEach(([itemName, totalQuantity]) => {
+        const item = stationaryItems.find(i => i.name === itemName);
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <span class="summary-item">${itemName} (${totalQuantity} units)</span>
+            <span class="summary-value">₹${item.price * totalQuantity}</span>
+        `;
+        summaryList.appendChild(listItem);
+    });
+}
+
+// Update top students
+function updateTopStudents() {
+    const topStudentsList = document.getElementById('topStudents');
+    topStudentsList.innerHTML = '';
+    
+    const studentTotals = [];
+    
+    students.forEach((student, index) => {
+        const totalElement = document.getElementById(`student-total-${index}`);
+        const total = parseInt(totalElement.textContent.replace('₹', ''));
+        studentTotals.push({ name: student.name, total });
+    });
+    
+    // Sort students by total
+    const sortedStudents = studentTotals
+        .filter(student => student.total > 0)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 5);
+    
+    if (sortedStudents.length === 0) {
+        topStudentsList.innerHTML = '<li class="summary-item">No data available</li>';
+        return;
+    }
+    
+    sortedStudents.forEach((student, index) => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <span class="summary-item">${index + 1}. ${student.name}</span>
+            <span class="summary-value">₹${student.total}</span>
+        `;
+        topStudentsList.appendChild(listItem);
+    });
+}
+
+// Clear all selections
+function clearAllSelections() {
+    students.forEach((student, studentIndex) => {
+        const quantityInputs = document.querySelectorAll(`#tableBody tr:nth-child(${studentIndex + 1}) .quantity-selector input`);
+        quantityInputs.forEach((input, itemIndex) => {
+            input.value = 0;
+            saveQuantity(studentIndex, itemIndex, 0);
+            
+            // Remove selection visual state
+            const stationaryItem = document.querySelector(`[data-student-index="${studentIndex}"][data-item-index="${itemIndex}"]`);
+            if (stationaryItem) {
+                stationaryItem.classList.remove('selected');
+            }
+        });
+        
+        document.getElementById(`student-total-${studentIndex}`).textContent = '₹0';
+    });
+    
+    document.getElementById('grandTotal').textContent = '₹0';
+    
+    // Clear summaries
+    initializeSummaries();
+    
+    // Update selected items count
+    updateSelectedItemsCount();
+    
+    showNotification('All selections cleared!');
+}
+
+// Select all items (set quantity to 1 for all items)
+function selectAllItems() {
+    students.forEach((student, studentIndex) => {
+        const quantityInputs = document.querySelectorAll(`#tableBody tr:nth-child(${studentIndex + 1}) .quantity-selector input`);
+        quantityInputs.forEach((input, itemIndex) => {
+            input.value = 1;
+            saveQuantity(studentIndex, itemIndex, 1);
+            
+            // Add selection visual state
+            const stationaryItem = document.querySelector(`[data-student-index="${studentIndex}"][data-item-index="${itemIndex}"]`);
+            if (stationaryItem) {
+                stationaryItem.classList.add('selected');
+            }
+        });
+    });
+    
+    calculateAllTotals();
+    updateSelectedItemsCount();
+}
+
+// Deselect all items (set quantity to 0 for all items)
+function deselectAllItems() {
+    clearAllSelections();
+}
+
+// Export to CSV
+function exportToCSV() {
+    let csv = 'Student Name,';
+    
+    // Add headers for stationary items
+    stationaryItems.forEach(item => {
+        csv += `${item.name} (Qty),`;
+    });
+    
+    csv += 'Total\n';
+    
+    // Add student data
+    students.forEach((student, studentIndex) => {
+        csv += `${student.name},`;
+        
+        let studentTotal = 0;
+        const row = document.querySelector(`#tableBody tr:nth-child(${studentIndex + 1})`);
+        const quantityInputs = row.querySelectorAll('.quantity-selector input');
+        
+        stationaryItems.forEach((item, itemIndex) => {
+            const quantity = parseInt(quantityInputs[itemIndex].value) || 0;
+            csv += `${quantity},`;
+            
+            if (quantity > 0) {
+                studentTotal += item.price * quantity;
+            }
+        });
+        
+        csv += `${studentTotal}\n`;
+    });
+    
+    // Create download link
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'U4_Stationary_List.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    showNotification('Data exported successfully!');
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    const notificationText = document.getElementById('notificationText');
+    
+    notificationText.textContent = message;
+    notification.className = 'notification show';
+    
+    if (type === 'error') {
+        notification.classList.add('error');
+    } else if (type === 'warning') {
+        notification.classList.add('warning');
+    }
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+// Show loading spinner
+function showLoadingSpinner() {
+    document.getElementById('loadingSpinner').style.display = 'block';
+}
+
+// Hide loading spinner
+function hideLoadingSpinner() {
+    document.getElementById('loadingSpinner').style.display = 'none';
+}
+
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#tableBody tr');
+    
+    rows.forEach(row => {
+        const studentName = row.getAttribute('data-name');
+        if (studentName.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Initialize the page
+window.onload = function() {
+    // Check if already logged in
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn === 'true') {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+            document.getElementById('loginContainer').classList.add('hidden');
+            showUserInfo(currentUser.username, currentUser.name);
+            generateTableRows();
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('totalStationaryItems').textContent = stationaryItems.length;
+        }
+    }
+}
